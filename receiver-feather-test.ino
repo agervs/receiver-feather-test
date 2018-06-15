@@ -12,9 +12,16 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
+#include <Adafruit_GFX.h>
+#include <ESP8266_SSD1322.h>
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
+#include "screens.h"
+
+#define OLED_CS     10  // Pin 10, CS - Chip select
+#define OLED_DC     9   // Pin 9 - DC digital signal
+#define OLED_RESET  0   // using hardware !RESET from Arduino instead
 
 int loopCount = 0;
 
@@ -44,6 +51,7 @@ int lunchPixel = 4;
 int bookPixel = 3;
 int waterPixel = 2;
 
+ESP8266_SSD1322 display(OLED_DC, OLED_RESET, OLED_CS);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(nps_num_of_pixels_in_strip, nps_din_pin);
 
 void setup() {
@@ -51,6 +59,11 @@ void setup() {
   Wire.setClock(400000);
   Serial.begin(115200);  // start serial for output
   strip.begin();
+  display.begin(true);
+  display.clearDisplay();
+  display.display();
+  display.drawBitmap(0, 0,  lunchbookwater, 256, 64, WHITE);
+  display.display();
 }
 
 void loop() {
