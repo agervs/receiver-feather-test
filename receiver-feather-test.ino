@@ -51,6 +51,8 @@ int lunchPixel = 4;
 int bookPixel = 3;
 int waterPixel = 2;
 
+bool success_message_triggered = false;
+
 ESP8266_SSD1322 display(OLED_DC, OLED_RESET, OLED_CS);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(nps_num_of_pixels_in_strip, nps_din_pin);
 
@@ -151,6 +153,13 @@ void loop() {
       set_pixel(waterPixel, 5, 0, 0);
   }
 
+  if (bookDetected == 1 && waterDetected == 1 && lunchDetected == 1){
+    if (success_message_triggered == false) {
+      trigger_success_message();
+    }
+  } else {
+    success_message_triggered = false;
+  }
 
 
 } // end of main loop
@@ -159,5 +168,25 @@ void loop() {
 void set_pixel(int num, int red, int green, int blue) {
     strip.setPixelColor(num, red, green, blue);
     strip.show();
+}
+
+void trigger_success_message() {
+  display.clearDisplay();
+  display.display();
+  display.drawBitmap(0,0,success_message,256,64,WHITE);
+  display.display();
+  delay(2000);
+  display.clearDisplay();
+  display.display();
+
+  success_message_triggered = true;
+  set_screens_back_to_normal();
+}
+
+void set_screens_back_to_normal(){
+  display.setCursor(0, 0);
+  display.drawBitmap(0,0,lunchbookwater,256,64,WHITE);
+  display.display();
+  display.clearDisplay();
 }
 
